@@ -1,6 +1,6 @@
 # pgen
 
-![GitHub release (with filter)](https://img.shields.io/github/v/release/jibstack64/pgen)
+![GitHub release (with filter)](https://img.shields.io/github/v/release/jibstack64/pgen) ![GitHub License](https://img.shields.io/github/license/jibstack64/pgen)
 
 A password generator.
 
