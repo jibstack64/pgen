@@ -10,7 +10,7 @@
 #define NUMBERS "1234567890"
 #define SYMBOLS "!\"#\\$%&'()*+,-./:;<=>?@[]^_`{|}~"
 
-char* generate(int, char**);
+char* generate(int, char**, char*);
 int random(int, int);
 void help(struct option[]);
 
@@ -39,8 +39,8 @@ int main(int argc, char** argv) {
 
 	/* v^v^v */
 	unsigned int length = 0;
-    char include[129];
-    char exclude[129];
+    char* include = (char*)malloc(sizeof(char)*1024); include[0] = '\0'; // lazy
+    char* exclude = (char*)malloc(sizeof(char)*1024); include[0] = '\0'; // really lazy
     bool use_lower = false;
     bool use_upper = false;
     bool use_numbers = false;
@@ -95,19 +95,21 @@ int main(int argc, char** argv) {
         printf("Length required.\n");
         help(long_options);
         exit(EXIT_FAILURE);
-    } else if (use_lower + use_upper + use_numbers + use_symbols == 0) {
+    } else if (use_lower + use_upper + use_numbers + use_symbols == 0
+                && include[0] == '\0') {
         printf("Must specify characters to use.\n");
         help(long_options);
         exit(EXIT_FAILURE);
     }
 
-    char* choices[5] = { NULL, NULL, NULL, NULL, NULL }; int i = 0;
-    if (use_lower)   { choices[i] = LOWERS; i++; }
-    if (use_upper)   { choices[i] = UPPERS; i++; }
-    if (use_numbers) { choices[i] = NUMBERS; i++; }
-    if (use_symbols) { choices[i] = SYMBOLS; i++; }
+    char* choices[6] = { NULL, NULL, NULL, NULL, NULL, NULL }; int i = 0;
+    if (use_lower)          { choices[i] = LOWERS; i++; }
+    if (use_upper)          { choices[i] = UPPERS; i++; }
+    if (use_numbers)        { choices[i] = NUMBERS; i++; }
+    if (use_symbols)        { choices[i] = SYMBOLS; i++; }
+    if (include[0] != '\0') { choices[i] = include, i++; }
 
-    char* final = generate(length, choices);
+    char* final = generate(length, choices, exclude);
     printf("%s", final);
     free(final);
 
@@ -115,11 +117,14 @@ int main(int argc, char** argv) {
 
 }
 
-char* generate(int l, char** strs) {
+char* generate(int l, char** strs, char* ignore) {
     
     // get the length of strs
     char** p = strs; while (*p) { p++; }
     int strs_len = p - strs;
+
+    // store len of ignore
+    size_t igl = strlen(ignore);
 
     // make an array of each length of every str in strs
     int slens[strs_len];
@@ -134,6 +139,12 @@ char* generate(int l, char** strs) {
         int sl = slens[s];
         char* sv = strs[s];
         final[x] = sv[random(0, sl-1)];
+        for (int i = 0; i < igl; i++) {
+            if (final[x] == ignore[i]) {
+                x--;
+                break;
+            }
+        }
     }
 
     return final;

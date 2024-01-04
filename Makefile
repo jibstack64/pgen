@@ -1,5 +1,5 @@
 
-VERSION = v1-0
+VERSION = v1-1
 
 CC = gcc
 CFLAGS = -Wall -DPLATFORM_DESKTOP
